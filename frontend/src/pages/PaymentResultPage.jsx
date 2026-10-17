@@ -96,16 +96,11 @@ export const PaymentResultPage = () => {
                 <Button onClick={() => window.print()} variant="alt">
                   <Printer size={16} style={{ marginRight: 6 }} /> Print / Save Receipt
                 </Button>
-                {orderNumber && (
-                  <Link to={`/orders/track?orderNumber=${orderNumber}`} className="btn">
-                    Track Order Status <ArrowRight size={16} style={{ marginLeft: 6 }} />
-                  </Link>
-                )}
                 <Link to="/profile" className="btn alt">
                   View in My Profile
                 </Link>
-                <Link to="/" className="btn alt">
-                  Back to Homepage
+                <Link to="/" className="btn">
+                  Back to Homepage <ArrowRight size={16} style={{ marginLeft: 6 }} />
                 </Link>
               </div>
             </>

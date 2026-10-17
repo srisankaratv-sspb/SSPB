@@ -222,8 +222,6 @@ export const OrderForm = ({ product, settings }) => {
     );
   };
 
-  const whatsappNumber = settings?.order_desk_whatsapp || '919840000000';
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(resultText)}`;
 
   return (
     <section className="band order" id="order">
@@ -430,16 +428,6 @@ export const OrderForm = ({ product, settings }) => {
                 <Button variant="alt" onClick={handleCopy}>
                   Copy order details
                 </Button>
-                {whatsappNumber && (
-                  <Button
-                    variant="alt"
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Send on WhatsApp
-                  </Button>
-                )}
                 <Button
                   variant="alt"
                   onClick={() => navigate(`/profile?phone=${encodeURIComponent(formData.phone.trim())}`)}

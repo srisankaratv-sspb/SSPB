@@ -31,10 +31,11 @@ export const Header = () => {
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Link
-            to="/orders/track"
+            to="/"
             className="nav-link-track"
+            onClick={() => scrollToSection('top')}
           >
-            Track Order
+            Home
           </Link>
           <Link
             to="/profile"
