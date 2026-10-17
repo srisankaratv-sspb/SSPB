@@ -22,9 +22,11 @@ export const Header = () => {
 
   return (
     <header className="top">
-      <div className="wrap">
         <Link to="/" className="brand" onClick={() => scrollToSection('top')}>
-          Sri Sankara TV
+          <div className="brand-logo-frame">
+            <img src="/logo.jpeg" alt="Sri Sankara TV" className="brand-logo" />
+          </div>
+          <span className="brand-title">Sri Sankara TV</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Link

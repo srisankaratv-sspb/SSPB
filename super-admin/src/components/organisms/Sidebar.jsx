@@ -41,8 +41,15 @@ export const Sidebar = ({ mobileOpen, onCloseMobile }) => {
   return (
     <aside className={`admin-sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-brand">
-        <h1>Sri Sankara TV</h1>
-        <span>Super Admin Portal</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 6, overflow: 'hidden', background: '#fff', flexShrink: 0, boxShadow: '0 0 0 1.5px rgba(228, 182, 85, 0.6)' }}>
+            <img src="/logo.jpeg" alt="Sri Sankara TV" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <div>
+            <h1>Sri Sankara TV</h1>
+            <span>Super Admin Portal</span>
+          </div>
+        </div>
       </div>
 
       <nav className="sidebar-nav">
