@@ -55,45 +55,99 @@ export const OrderForm = ({ product, settings }) => {
 
   const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 
+  const validateField = (field, value) => {
+    const val = (value || '').trim();
+    switch (field) {
+      case 'name':
+        if (!val) return 'Full name is required.';
+        if (val.length < 2) return 'Full name must be at least 2 characters.';
+        if (!/^[a-zA-Z\s.'-]+$/.test(val)) return 'Name should contain letters only.';
+        return '';
+
+      case 'phone': {
+        const digits = val.replace(/\D/g, '');
+        if (!digits) return 'Mobile number is required.';
+        if (digits.length < 10) return `Enter full 10-digit mobile number (${digits.length}/10 digits).`;
+        if (!/^[6-9]/.test(digits)) return 'Indian mobile numbers must start with 6, 7, 8, or 9.';
+        if (!/^[6-9]\d{9}$/.test(digits)) return 'Enter a valid 10-digit Indian mobile number.';
+        return '';
+      }
+
+      case 'email':
+        if (val && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val)) {
+          return 'Enter a valid email address (e.g. name@domain.com).';
+        }
+        return '';
+
+      case 'address':
+        if (!val) return 'Delivery address is required.';
+        if (val.length < 8) return 'Enter complete address (door no, street, area - min 8 chars).';
+        return '';
+
+      case 'city':
+        if (!val) return 'City is required.';
+        if (val.length < 2) return 'Enter a valid city name.';
+        if (!/^[a-zA-Z\s.-]+$/.test(val)) return 'City name should contain letters only.';
+        return '';
+
+      case 'state':
+        if (!val) return 'State is required.';
+        if (val.length < 2) return 'Enter your state.';
+        return '';
+
+      case 'pincode': {
+        const pinDigits = val.replace(/\D/g, '');
+        if (!pinDigits) return 'Pincode is required.';
+        if (pinDigits.length < 6) return `Enter full 6-digit pincode (${pinDigits.length}/6 digits).`;
+        if (!/^[1-9]\d{5}$/.test(pinDigits)) return 'Enter a valid 6-digit Indian postal code.';
+        return '';
+      }
+
+      default:
+        return '';
+    }
+  };
+
   const validate = () => {
     const errs = {};
-    const name = formData.name.trim();
-    const phone = formData.phone.trim().replace(/[\s-]/g, '');
-    const addr = formData.address.trim();
-    const city = formData.city.trim();
-    const state = formData.state.trim();
-    const pin = formData.pincode.trim();
-
-    if (name.length < 2) {
-      errs.name = 'Enter your full name.';
-    }
-    if (!/^(?:\+?91)?[6-9]\d{9}$/.test(phone)) {
-      errs.phone = 'Enter a 10-digit Indian mobile number.';
-    }
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errs.email = 'Enter a valid email address.';
-    }
-    if (addr.length < 8) {
-      errs.address = 'Enter your full delivery address.';
-    }
-    if (city.length < 2) {
-      errs.city = 'Enter your city.';
-    }
-    if (state.length < 2) {
-      errs.state = 'Enter your state.';
-    }
-    if (!/^\d{6}$/.test(pin)) {
-      errs.pincode = 'Enter a 6-digit pincode.';
-    }
+    ['name', 'phone', 'email', 'address', 'city', 'state', 'pincode'].forEach((f) => {
+      const err = validateField(f, formData[f]);
+      if (err) errs[f] = err;
+    });
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
+  const handleBlur = (field) => () => {
+    const err = validateField(field, formData[field]);
+    setErrors((prev) => ({ ...prev, [field]: err }));
+  };
+
   const handleChange = (field) => (e) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    let rawVal = e.target.value;
+
+    // Strict input formatting as user types
+    if (field === 'phone') {
+      // Numbers only, strictly max 10 digits
+      rawVal = rawVal.replace(/\D/g, '').slice(0, 10);
+    } else if (field === 'pincode') {
+      // Numbers only, strictly max 6 digits
+      rawVal = rawVal.replace(/\D/g, '').slice(0, 6);
+    } else if (field === 'name') {
+      // Only letters, spaces, dots, and hyphens
+      rawVal = rawVal.replace(/[^a-zA-Z\s.'-]/g, '');
+    } else if (field === 'city') {
+      // Letters only for city
+      rawVal = rawVal.replace(/[^a-zA-Z\s.-]/g, '');
+    }
+
+    setFormData((prev) => ({ ...prev, [field]: rawVal }));
+
+    // Real-time error correction as devotee types
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }));
+      const liveErr = validateField(field, rawVal);
+      setErrors((prev) => ({ ...prev, [field]: liveErr }));
     }
   };
 
@@ -328,9 +382,13 @@ export const OrderForm = ({ product, settings }) => {
                 <FormField
                   id="name"
                   label="Full name"
+                  placeholder="e.g. Sriram Kalaikumar"
                   value={formData.name}
                   onChange={handleChange('name')}
+                  onBlur={handleBlur('name')}
                   error={errors.name}
+                  helperText="Devotee name for sankalpam & certificate"
+                  maxLength={60}
                   autoComplete="name"
                   required
                 />
@@ -339,10 +397,13 @@ export const OrderForm = ({ product, settings }) => {
                   label="Mobile number"
                   type="tel"
                   inputMode="numeric"
-                  placeholder="10-digit number"
+                  placeholder="10-digit number (e.g. 9043905766)"
                   value={formData.phone}
                   onChange={handleChange('phone')}
+                  onBlur={handleBlur('phone')}
                   error={errors.phone}
+                  helperText="10-digit Indian mobile number (without +91)"
+                  maxLength={10}
                   autoComplete="tel-national"
                   required
                 />
@@ -355,7 +416,10 @@ export const OrderForm = ({ product, settings }) => {
                 placeholder="devotee@example.com"
                 value={formData.email}
                 onChange={handleChange('email')}
+                onBlur={handleBlur('email')}
                 error={errors.email}
+                helperText="To receive blessed pooja certificate & Brevo receipt"
+                maxLength={80}
                 autoComplete="email"
               />
 
@@ -363,9 +427,14 @@ export const OrderForm = ({ product, settings }) => {
                 id="addr"
                 label="Delivery address"
                 as="textarea"
+                rows={3}
+                placeholder="Door/Flat No., Building, Street Name, Landmark, Area"
                 value={formData.address}
                 onChange={handleChange('address')}
+                onBlur={handleBlur('address')}
                 error={errors.address}
+                helperText="Complete street address for postal delivery"
+                maxLength={250}
                 autoComplete="street-address"
                 required
               />
@@ -374,18 +443,24 @@ export const OrderForm = ({ product, settings }) => {
                 <FormField
                   id="city"
                   label="City"
+                  placeholder="e.g. Chennai"
                   value={formData.city}
                   onChange={handleChange('city')}
+                  onBlur={handleBlur('city')}
                   error={errors.city}
+                  maxLength={40}
                   autoComplete="address-level2"
                   required
                 />
                 <FormField
                   id="state"
                   label="State"
+                  placeholder="e.g. Tamil Nadu"
                   value={formData.state}
                   onChange={handleChange('state')}
+                  onBlur={handleBlur('state')}
                   error={errors.state}
+                  maxLength={40}
                   autoComplete="address-level1"
                   required
                 />
@@ -395,10 +470,13 @@ export const OrderForm = ({ product, settings }) => {
                 id="pin"
                 label="Pincode"
                 inputMode="numeric"
-                placeholder="6 digits"
+                placeholder="6 digits (e.g. 600001)"
                 value={formData.pincode}
                 onChange={handleChange('pincode')}
+                onBlur={handleBlur('pincode')}
                 error={errors.pincode}
+                helperText="6-digit postal code"
+                maxLength={6}
                 autoComplete="postal-code"
                 required
                 style={{ maxWidth: 220 }}

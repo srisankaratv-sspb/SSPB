@@ -8,11 +8,14 @@ export const FormField = ({
   type = 'text',
   value,
   onChange,
+  onBlur,
   error,
+  helperText,
   placeholder,
   required = false,
   autoComplete,
   inputMode,
+  maxLength,
   as = 'input',
   rows,
   className = '',
@@ -20,9 +23,16 @@ export const FormField = ({
 }) => {
   return (
     <div className={`fld ${className}`} style={style}>
-      <Label htmlFor={id} required={required}>
-        {label}
-      </Label>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Label htmlFor={id} required={required}>
+          {label}
+        </Label>
+        {maxLength && (
+          <span style={{ fontSize: '0.74rem', color: 'var(--muted)', opacity: 0.8 }}>
+            {value?.length || 0}/{maxLength}
+          </span>
+        )}
+      </div>
       <Input
         id={id}
         type={type}
@@ -30,15 +40,24 @@ export const FormField = ({
         rows={rows}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         required={required}
         autoComplete={autoComplete}
         inputMode={inputMode}
+        maxLength={maxLength}
         invalid={Boolean(error)}
       />
-      <p className="err" id={`e-${id}`} role="alert">
-        {error || ''}
-      </p>
+      {error ? (
+        <p className="err" id={`e-${id}`} role="alert" style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span aria-hidden="true">⚠️</span>
+          <span>{error}</span>
+        </p>
+      ) : helperText ? (
+        <p className="fld-helper" style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 4, opacity: 0.8 }}>
+          {helperText}
+        </p>
+      ) : null}
     </div>
   );
 };
