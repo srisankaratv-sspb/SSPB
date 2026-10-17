@@ -77,14 +77,19 @@ export const HeroSection = ({
 
           {/* Right Column (approx 55%): Realistic Cinematic Pooja Box Display */}
           <div className="hero-product-stage">
-            <div className="hero-product-backlight" aria-hidden="true" />
             <img
-              src={product?.imageUrl || "/Luxury%20Maroon%20Murugan%20Pooja%20Kit.png"}
+              src={product?.imageUrl || "/Luxury Maroon Murugan Pooja Kit.png"}
               alt="Sri Sankara TV Soora Samhara Pooja Box 2026 - Sanctified kit featuring Lord Murugan statue, 6 Arupadai vibhuti tins, rudraksh bracelet, chandan and final Yaagam box"
               className="hero-box-img"
               width="1024"
               height="1152"
               loading="eager"
+              onError={(e) => {
+                if (!e.target.dataset.triedFallback) {
+                  e.target.dataset.triedFallback = 'true';
+                  e.target.src = '/hero-product-kit.png';
+                }
+              }}
             />
           </div>
         </div>

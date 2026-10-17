@@ -28,6 +28,7 @@ const ProductSchema = new mongoose.Schema({
   reservedCount: { type: Number, default: 0 },
   eventDate: { type: Date, default: new Date('2026-11-15T00:00:00+05:30') },
   eventLocation: { type: String, default: 'Thiruttani' },
+  imageUrl: { type: String, default: '/Luxury Maroon Murugan Pooja Kit.png' },
   contents: [ProductContentSchema],
   temples: [TempleSchema],
   certificateConfig: {

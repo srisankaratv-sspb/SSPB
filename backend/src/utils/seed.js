@@ -25,6 +25,7 @@ export const seedDatabase = async () => {
     isActive: true,
     eventDate: new Date('2026-11-15T00:00:00+05:30'),
     eventLocation: 'Thiruttani',
+    imageUrl: '/Luxury Maroon Murugan Pooja Kit.png',
     contents: [
       { qty: '6×', title: 'Vibhuti from the Arupadai temples', description: 'One packet from each of the six abodes of Lord Murugan.' },
       { qty: '1×', title: 'Murugan keepsake statue', description: 'Six inches tall, for your home altar.' },
