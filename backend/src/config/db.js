@@ -4,6 +4,10 @@ import mongoose from 'mongoose';
 let mongoMemoryServer = null;
 
 export const connectDB = async (options = {}) => {
+  if (mongoose.connection.readyState >= 1) {
+    return mongoose.connection;
+  }
+
   const isTest = process.env.NODE_ENV === 'test' || options.useMemory;
 
   if (isTest) {
