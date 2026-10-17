@@ -22,6 +22,7 @@ export const Header = () => {
 
   return (
     <header className="top">
+      <div className="wrap">
         <Link to="/" className="brand" onClick={() => scrollToSection('top')}>
           <div className="brand-logo-frame">
             <img src="/logo.jpeg" alt="Sri Sankara TV" className="brand-logo" />
