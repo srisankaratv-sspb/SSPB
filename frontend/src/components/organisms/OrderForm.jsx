@@ -189,7 +189,10 @@ export const OrderForm = ({ product, settings }) => {
             orderNumber: orderResponse.orderNumber,
             razorpayOrderId: paymentDetails.razorpayOrderId,
             razorpayPaymentId: paymentDetails.razorpayPaymentId,
-            razorpaySignature: paymentDetails.razorpaySignature
+            razorpaySignature: paymentDetails.razorpaySignature,
+            orderToken: orderResponse.orderToken,
+            customer: formData,
+            quantity
           });
 
           if (verifyRes.success) {

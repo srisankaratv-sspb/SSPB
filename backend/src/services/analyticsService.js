@@ -4,8 +4,10 @@ import { PAYMENT_STATUS, ORDER_STATUS } from '../config/constants.js';
 
 class AnalyticsService {
   async getDashboardSummary() {
-    // 1. Total order metrics
-    const totalOrders = await Order.countDocuments();
+    // 1. Total order metrics - strictly confirmed paid orders
+    const totalOrders = await Order.countDocuments({
+      paymentStatus: { $in: [PAYMENT_STATUS.PAID, PAYMENT_STATUS.CAPTURED, 'REFUNDED'] }
+    });
     
     // 2. Strict revenue aggregation: ONLY orders with paymentStatus === PAID or CAPTURED
     const verifiedOrders = await Order.find({
@@ -45,8 +47,10 @@ class AnalyticsService {
       statusCounts[status] = await Order.countDocuments({ orderStatus: status });
     }
 
-    // 6. Recent 10 orders
-    const recentOrders = await Order.find()
+    // 6. Recent 10 verified paid orders
+    const recentOrders = await Order.find({
+      paymentStatus: { $in: [PAYMENT_STATUS.PAID, PAYMENT_STATUS.CAPTURED, 'REFUNDED'] }
+    })
       .sort({ createdAt: -1 })
       .limit(10)
       .select('orderNumber customer.name customer.phone quantity totalAmountInPaise paymentStatus orderStatus createdAt');

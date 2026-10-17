@@ -4,7 +4,7 @@ import AuditLog from '../models/AuditLog.js';
 import Customer from '../models/Customer.js';
 import orderService from '../services/orderService.js';
 import brevoService from '../services/brevoService.js';
-import { ORDER_STATUS } from '../config/constants.js';
+import { ORDER_STATUS, PAYMENT_STATUS } from '../config/constants.js';
 
 export const createOrder = async (req, res) => {
   try {
@@ -91,6 +91,8 @@ export const getAdminOrders = async (req, res) => {
 
     if (paymentStatus) {
       query.paymentStatus = paymentStatus;
+    } else {
+      query.paymentStatus = { $in: [PAYMENT_STATUS.PAID, PAYMENT_STATUS.CAPTURED, 'REFUNDED'] };
     }
 
     if (startDate || endDate) {
@@ -260,7 +262,9 @@ export const updateOrderStatus = async (req, res) => {
 
 export const exportOrdersCSV = async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
+    const orders = await Order.find({
+      paymentStatus: { $in: [PAYMENT_STATUS.PAID, PAYMENT_STATUS.CAPTURED, 'REFUNDED'] }
+    }).sort({ createdAt: -1 });
 
     const headers = [
       'Order Number',

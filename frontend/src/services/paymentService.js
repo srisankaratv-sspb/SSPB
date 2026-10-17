@@ -1,13 +1,8 @@
 import { api } from './apiClient';
 
 export const paymentService = {
-  verifyPayment: async ({ orderNumber, razorpayOrderId, razorpayPaymentId, razorpaySignature }) => {
-    return api.post('/payments/verify', {
-      orderNumber,
-      razorpayOrderId,
-      razorpayPaymentId,
-      razorpaySignature
-    });
+  verifyPayment: async (payload) => {
+    return api.post('/payments/verify', payload);
   },
 
   openRazorpayCheckout: ({

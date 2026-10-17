@@ -7,9 +7,9 @@ import { PAYMENT_STATUS } from '../config/constants.js';
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { orderNumber, razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+    const { orderNumber, razorpayOrderId, razorpayPaymentId, razorpaySignature, orderToken, customer, quantity } = req.body;
 
-    if (!orderNumber || !razorpayOrderId || !razorpayPaymentId) {
+    if (!razorpayOrderId || !razorpayPaymentId) {
       return res.status(400).json({
         success: false,
         message: 'Missing required payment verification parameters'
@@ -20,7 +20,10 @@ export const verifyPayment = async (req, res) => {
       orderNumber,
       razorpayOrderId,
       razorpayPaymentId,
-      razorpaySignature
+      razorpaySignature,
+      orderToken,
+      customer,
+      quantity
     });
 
     res.status(200).json({

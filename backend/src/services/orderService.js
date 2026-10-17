@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import Payment from '../models/Payment.js';
@@ -74,13 +75,39 @@ class OrderService {
     const discountInPaise = 0;
     const totalAmountInPaise = subtotalInPaise + deliveryChargeInPaise - discountInPaise;
 
-    // 5. Generate human-readable order number
+    // 5. Generate human-readable order number & clean contact
     const orderNumber = this.generateOrderNumber();
     const cleanPhone = this.normalizePhone(customer.phone);
 
-    // 6. Create pending order record in MongoDB
-    const order = new Order({
+    // 6. Create Razorpay gateway order (DO NOT store in MongoDB until payment succeeds)
+    const razorpayOrder = await razorpayService.createOrder({
       orderNumber,
+      amountInPaise: totalAmountInPaise,
+      currency: product.currency || 'INR',
+      notes: {
+        orderNumber,
+        productName: product.name,
+        quantity: String(qty),
+        customerName: customer.name.trim(),
+        customerPhone: cleanPhone,
+        customerEmail: customer.email ? customer.email.trim().toLowerCase() : '',
+        city: customer.city.trim(),
+        state: customer.state.trim() || 'Tamil Nadu',
+        pincode: customer.pincode.trim()
+      }
+    });
+
+    // 7. Sign a secure draft order token so order details are verified upon payment return
+    const draftPayload = {
+      orderNumber,
+      razorpayOrderId: razorpayOrder.id,
+      productId: product._id,
+      productName: product.name,
+      productSlug: product.slug,
+      quantity: qty,
+      unitPriceInPaise,
+      totalAmountInPaise,
+      currency: product.currency || 'INR',
       customer: {
         name: customer.name.trim(),
         phone: cleanPhone,
@@ -90,98 +117,18 @@ class OrderService {
         state: customer.state.trim() || 'Tamil Nadu',
         pincode: customer.pincode.trim()
       },
-      customerId: customerUser?._id || null,
-      productId: product._id,
-      productName: product.name,
-      quantity: qty,
-      unitPriceInPaise,
-      subtotalInPaise,
-      deliveryChargeInPaise,
-      discountInPaise,
-      totalAmountInPaise,
-      currency: product.currency || 'INR',
-      paymentStatus: PAYMENT_STATUS.PENDING,
-      orderStatus: ORDER_STATUS.CREATED,
-      timeline: [{
-        status: ORDER_STATUS.CREATED,
-        note: `Order created for ${qty} box(es). Awaiting payment.`,
-        timestamp: new Date(),
-        updatedBy: 'Customer'
-      }]
-    });
+      customerId: customerUser?._id || null
+    };
 
-    // 7. Create Razorpay order
-    const razorpayOrder = await razorpayService.createOrder({
-      orderNumber,
-      amountInPaise: totalAmountInPaise,
-      currency: product.currency || 'INR',
-      notes: {
-        productName: product.name,
-        quantity: String(qty),
-        customerName: customer.name.trim(),
-        customerPhone: cleanPhone
-      }
-    });
+    const orderToken = jwt.sign(
+      draftPayload,
+      process.env.ADMIN_JWT_SECRET || 'super_secret_jwt_key_sri_sankara_tv_2026_dev_mode',
+      { expiresIn: '24h' }
+    );
 
-    order.razorpayOrderId = razorpayOrder.id;
-    order.orderStatus = ORDER_STATUS.PAYMENT_PENDING;
-    order.timeline.push({
-      status: ORDER_STATUS.PAYMENT_PENDING,
-      note: `Razorpay order created with ID ${razorpayOrder.id}`,
-      timestamp: new Date(),
-      updatedBy: 'PaymentGateway'
-    });
-
-    await order.save();
-
-    // Link or upsert customer profile record
-    try {
-      let customerRecord = await Customer.findOne({ phone: cleanPhone });
-      if (!customerRecord) {
-        customerRecord = new Customer({
-          name: customer.name.trim(),
-          phone: cleanPhone,
-          email: customer.email ? customer.email.trim().toLowerCase() : '',
-          addresses: [{
-            address: customer.address.trim(),
-            city: customer.city.trim(),
-            state: customer.state.trim() || 'Tamil Nadu',
-            pincode: customer.pincode.trim()
-          }],
-          totalOrders: 1,
-          totalSpentInPaise: 0,
-          lastOrderAt: new Date()
-        });
-        await customerRecord.save();
-      } else {
-        customerRecord.lastOrderAt = new Date();
-        if (customer.email && !customerRecord.email) {
-          customerRecord.email = customer.email.trim().toLowerCase();
-        }
-        await customerRecord.save();
-      }
-      order.customerId = customerRecord._id;
-      await order.save();
-    } catch (custErr) {
-      console.warn(`[OrderService] Initial customer upsert note: ${custErr.message}`);
-    }
-
-    // 8. Create internal Payment record
-    const internalPaymentId = `PAY-${orderNumber}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
-    const payment = new Payment({
-      internalPaymentId,
-      orderId: order._id,
-      orderNumber: order.orderNumber,
-      razorpayOrderId: razorpayOrder.id,
-      amountInPaise: totalAmountInPaise,
-      currency: product.currency || 'INR',
-      status: PAYMENT_STATUS.PENDING
-    });
-    await payment.save();
-
+    // Return session details to frontend. NOTE: No record is created in MongoDB until payment completes.
     return {
-      orderId: order._id,
-      orderNumber: order.orderNumber,
+      orderNumber,
       razorpayOrderId: razorpayOrder.id,
       amountInPaise: totalAmountInPaise,
       amountInRupees: totalAmountInPaise / 100,
@@ -189,23 +136,13 @@ class OrderService {
       keyId: razorpayService.getKeyId(),
       productName: product.name,
       quantity: qty,
-      customer: order.customer
+      customer: draftPayload.customer,
+      orderToken
     };
   }
 
-  async verifyAndConfirmPayment({ orderNumber, razorpayOrderId, razorpayPaymentId, razorpaySignature }) {
-    const order = await Order.findOne({ orderNumber });
-    if (!order) {
-      throw new Error(`Order ${orderNumber} not found.`);
-    }
-
-    // Check if order is already verified and paid
-    if (order.paymentStatus === PAYMENT_STATUS.CAPTURED || order.paymentStatus === PAYMENT_STATUS.PAID) {
-      console.log(`[OrderService] Order ${orderNumber} is already confirmed.`);
-      return order;
-    }
-
-    // Verify HMAC-SHA256 signature
+  async verifyAndConfirmPayment({ orderNumber, razorpayOrderId, razorpayPaymentId, razorpaySignature, orderToken, customer, quantity }) {
+    // 1. Verify HMAC-SHA256 signature
     const isValidSignature = razorpayService.verifyPaymentSignature({
       razorpayOrderId,
       razorpayPaymentId,
@@ -213,62 +150,130 @@ class OrderService {
     });
 
     if (!isValidSignature) {
-      order.timeline.push({
-        status: PAYMENT_STATUS.FAILED,
-        note: `Payment signature verification failed for payment ID: ${razorpayPaymentId}`,
-        timestamp: new Date(),
-        updatedBy: 'SecurityMiddleware'
-      });
-      await order.save();
       throw new Error('Payment signature verification failed. The transaction could not be verified.');
     }
 
-    // Fetch authoritative gateway payment record
+    // 2. Fetch authoritative gateway payment record
     const gatewayPayment = await razorpayService.fetchPayment(razorpayPaymentId);
 
-    // Update internal Payment record
-    let payment = await Payment.findOne({ razorpayOrderId });
-    if (!payment) {
-      payment = new Payment({
-        internalPaymentId: `PAY-${order.orderNumber}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`,
-        orderId: order._id,
-        orderNumber: order.orderNumber,
-        razorpayOrderId
-      });
+    // 3. Check if order is already saved and paid (idempotency)
+    let order = await Order.findOne({
+      $or: [
+        { razorpayOrderId },
+        { razorpayPaymentId },
+        ...(orderNumber ? [{ orderNumber }] : [])
+      ]
+    });
+
+    if (order && (order.paymentStatus === PAYMENT_STATUS.CAPTURED || order.paymentStatus === PAYMENT_STATUS.PAID)) {
+      console.log(`[OrderService] Order ${order.orderNumber} is already confirmed.`);
+      return order;
     }
 
-    payment.razorpayPaymentId = razorpayPaymentId;
-    payment.razorpaySignature = razorpaySignature;
-    payment.amountInPaise = order.totalAmountInPaise;
-    payment.status = PAYMENT_STATUS.CAPTURED;
-    payment.method = gatewayPayment.method || 'upi';
-    payment.bank = gatewayPayment.bank || null;
-    payment.wallet = gatewayPayment.wallet || null;
-    payment.vpa = gatewayPayment.vpa || null;
-    payment.email = gatewayPayment.email || order.customer.email || null;
-    payment.contact = gatewayPayment.contact || order.customer.phone || null;
-    payment.rawGatewayResponse = gatewayPayment;
-    payment.verifiedAt = new Date();
+    // 4. Resolve verified order & customer payload from token or request
+    let orderData = null;
+    if (orderToken) {
+      try {
+        orderData = jwt.verify(orderToken, process.env.ADMIN_JWT_SECRET || 'super_secret_jwt_key_sri_sankara_tv_2026_dev_mode');
+      } catch (tokErr) {
+        console.warn(`[OrderService] Token verification note: ${tokErr.message}`);
+      }
+    }
+
+    const resolvedOrderNumber = orderData?.orderNumber || orderNumber || `SSK-2026-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+    const cleanPhone = this.normalizePhone(orderData?.customer?.phone || customer?.phone || gatewayPayment?.contact || '9999999999');
+    const resolvedCustomer = {
+      name: (orderData?.customer?.name || customer?.name || gatewayPayment?.notes?.customerName || 'Devotee').trim(),
+      phone: cleanPhone,
+      email: (orderData?.customer?.email || customer?.email || gatewayPayment?.notes?.customerEmail || gatewayPayment?.email || '').trim().toLowerCase(),
+      address: (orderData?.customer?.address || customer?.address || 'Provided at checkout').trim(),
+      city: (orderData?.customer?.city || customer?.city || gatewayPayment?.notes?.city || 'Chennai').trim(),
+      state: (orderData?.customer?.state || customer?.state || gatewayPayment?.notes?.state || 'Tamil Nadu').trim(),
+      pincode: (orderData?.customer?.pincode || customer?.pincode || gatewayPayment?.notes?.pincode || '600001').trim()
+    };
+    const resolvedQty = parseInt(orderData?.quantity || quantity || gatewayPayment?.notes?.quantity || 1, 10);
+    const product = await this.getActiveProduct(orderData?.productSlug);
+    const unitPriceInPaise = product.priceInPaise;
+    const totalAmountInPaise = resolvedQty * unitPriceInPaise;
+
+    // 5. STORE IN DATABASE ONLY NOW (WHEN PAYMENT IS CONFIRMED AND DONE)
+    if (!order) {
+      order = new Order({
+        orderNumber: resolvedOrderNumber,
+        customer: resolvedCustomer,
+        customerId: orderData?.customerId || null,
+        productId: product._id,
+        productName: product.name,
+        quantity: resolvedQty,
+        unitPriceInPaise,
+        subtotalInPaise: totalAmountInPaise,
+        deliveryChargeInPaise: 0,
+        discountInPaise: 0,
+        totalAmountInPaise,
+        currency: product.currency || 'INR',
+        paymentStatus: PAYMENT_STATUS.PAID,
+        orderStatus: ORDER_STATUS.PAID,
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
+        timeline: [
+          {
+            status: ORDER_STATUS.CREATED,
+            note: `Order initiated for ${resolvedQty} box(es).`,
+            timestamp: new Date(),
+            updatedBy: 'Customer'
+          },
+          {
+            status: ORDER_STATUS.PAID,
+            note: `Payment verified successfully via Razorpay (Payment ID: ${razorpayPaymentId}, Method: ${gatewayPayment.method || 'online'}).`,
+            timestamp: new Date(),
+            updatedBy: 'RazorpayGateway'
+          }
+        ]
+      });
+      await order.save();
+    } else {
+      order.paymentStatus = PAYMENT_STATUS.PAID;
+      order.orderStatus = ORDER_STATUS.PAID;
+      order.razorpayPaymentId = razorpayPaymentId;
+      order.razorpaySignature = razorpaySignature;
+      order.timeline.push({
+        status: ORDER_STATUS.PAID,
+        note: `Payment verified successfully via Razorpay (Payment ID: ${razorpayPaymentId}).`,
+        timestamp: new Date(),
+        updatedBy: 'RazorpayGateway'
+      });
+      await order.save();
+    }
+
+    // 6. Create internal Payment record
+    const internalPaymentId = `PAY-${order.orderNumber}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+    const payment = new Payment({
+      internalPaymentId,
+      orderId: order._id,
+      orderNumber: order.orderNumber,
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
+      amountInPaise: order.totalAmountInPaise,
+      currency: order.currency,
+      status: PAYMENT_STATUS.CAPTURED,
+      method: gatewayPayment.method || 'upi',
+      bank: gatewayPayment.bank || null,
+      wallet: gatewayPayment.wallet || null,
+      vpa: gatewayPayment.vpa || null,
+      email: gatewayPayment.email || order.customer.email || null,
+      contact: gatewayPayment.contact || order.customer.phone || null,
+      rawGatewayResponse: gatewayPayment,
+      verifiedAt: new Date()
+    });
     await payment.save();
 
-    // Mark Order as Paid
-    order.paymentStatus = PAYMENT_STATUS.PAID;
-    order.orderStatus = ORDER_STATUS.PAID;
-    order.razorpayPaymentId = razorpayPaymentId;
-    order.razorpaySignature = razorpaySignature;
-    order.timeline.push({
-      status: ORDER_STATUS.PAID,
-      note: `Payment verified successfully via Razorpay (Payment ID: ${razorpayPaymentId}, Method: ${payment.method}).`,
-      timestamp: new Date(),
-      updatedBy: 'RazorpayGateway'
-    });
-    await order.save();
-
-    // Upsert Customer profile
+    // 7. Upsert Customer profile
     try {
-      let customer = await Customer.findOne({ phone: order.customer.phone });
-      if (!customer) {
-        customer = new Customer({
+      let customerRecord = await Customer.findOne({ phone: order.customer.phone });
+      if (!customerRecord) {
+        customerRecord = new Customer({
           name: order.customer.name,
           phone: order.customer.phone,
           email: order.customer.email,
@@ -283,21 +288,21 @@ class OrderService {
           lastOrderAt: new Date()
         });
       } else {
-        customer.totalOrders += 1;
-        customer.totalSpentInPaise += order.totalAmountInPaise;
-        customer.lastOrderAt = new Date();
-        if (order.customer.email && !customer.email) {
-          customer.email = order.customer.email;
+        customerRecord.totalOrders += 1;
+        customerRecord.totalSpentInPaise += order.totalAmountInPaise;
+        customerRecord.lastOrderAt = new Date();
+        if (order.customer.email && !customerRecord.email) {
+          customerRecord.email = order.customer.email;
         }
       }
-      await customer.save();
-      order.customerId = customer._id;
+      await customerRecord.save();
+      order.customerId = customerRecord._id;
       await order.save();
     } catch (custErr) {
       console.warn(`[OrderService] Error upserting customer: ${custErr.message}`);
     }
 
-    // Trigger transactional notifications via Brevo
+    // 8. Trigger transactional notifications via Brevo
     try {
       await brevoService.sendOrderConfirmation(order);
       await brevoService.sendAdminNewOrderAlert(order);
@@ -345,13 +350,53 @@ class OrderService {
       return { received: true, duplicate: true };
     }
 
-    const order = await Order.findOne({ razorpayOrderId });
-    if (!order) {
-      console.warn(`[OrderService] Webhook received for unknown order with Razorpay Order ID: ${razorpayOrderId}`);
-      return { received: true, error: 'Order not found' };
-    }
-
+    let order = await Order.findOne({ razorpayOrderId });
+    
     if (eventType === 'payment.captured' || eventType === 'order.paid') {
+      if (!order) {
+        // Devotee paid but browser closed before verify endpoint finished.
+        // Construct and save order as PAID from Razorpay verified notes
+        const notes = paymentEntity.notes || {};
+        const product = await this.getActiveProduct();
+        const quantity = parseInt(notes.quantity || 1, 10);
+        const totalAmountInPaise = paymentEntity.amount || (quantity * product.priceInPaise);
+
+        order = new Order({
+          orderNumber: notes.orderNumber || `SSK-2026-${crypto.randomBytes(3).toString('hex').toUpperCase()}`,
+          customer: {
+            name: (notes.customerName || 'Devotee').trim(),
+            phone: this.normalizePhone(notes.customerPhone || paymentEntity.contact || '9999999999'),
+            email: (notes.customerEmail || paymentEntity.email || '').trim().toLowerCase(),
+            address: 'Verified via checkout',
+            city: (notes.city || 'Chennai').trim(),
+            state: (notes.state || 'Tamil Nadu').trim(),
+            pincode: (notes.pincode || '600001').trim()
+          },
+          productId: product._id,
+          productName: product.name,
+          quantity,
+          unitPriceInPaise: product.priceInPaise,
+          subtotalInPaise: totalAmountInPaise,
+          deliveryChargeInPaise: 0,
+          discountInPaise: 0,
+          totalAmountInPaise,
+          currency: paymentEntity.currency || 'INR',
+          paymentStatus: PAYMENT_STATUS.PAID,
+          orderStatus: ORDER_STATUS.PAID,
+          razorpayOrderId,
+          razorpayPaymentId,
+          timeline: [
+            {
+              status: ORDER_STATUS.PAID,
+              note: `Payment confirmed via webhook event ${eventType} (${eventId})`,
+              timestamp: new Date(),
+              updatedBy: 'RazorpayWebhook'
+            }
+          ]
+        });
+        await order.save();
+      }
+
       if (!payment) {
         payment = new Payment({
           internalPaymentId: `PAY-${order.orderNumber}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`,
@@ -388,27 +433,17 @@ class OrderService {
         await brevoService.sendAdminNewOrderAlert(order);
       }
     } else if (eventType === 'payment.failed') {
-      if (payment) {
-        payment.status = PAYMENT_STATUS.FAILED;
-        payment.errorDetails = {
-          code: paymentEntity.error_code,
-          description: paymentEntity.error_description,
-          source: paymentEntity.error_source,
-          step: paymentEntity.error_step,
-          reason: paymentEntity.error_reason
-        };
-        payment.webhookEventIds.push(eventId);
-        await payment.save();
+      // Do not store abandoned or failed orders in the database
+      if (order) {
+        order.paymentStatus = PAYMENT_STATUS.FAILED;
+        order.timeline.push({
+          status: PAYMENT_STATUS.FAILED,
+          note: `Payment failed: ${paymentEntity.error_description || 'Unknown error'}`,
+          timestamp: new Date(),
+          updatedBy: 'RazorpayWebhook'
+        });
+        await order.save();
       }
-
-      order.paymentStatus = PAYMENT_STATUS.FAILED;
-      order.timeline.push({
-        status: PAYMENT_STATUS.FAILED,
-        note: `Payment failed: ${paymentEntity.error_description || 'Unknown error'}`,
-        timestamp: new Date(),
-        updatedBy: 'RazorpayWebhook'
-      });
-      await order.save();
     }
 
     return { received: true, eventType };
