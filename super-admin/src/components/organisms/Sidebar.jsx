@@ -8,12 +8,10 @@ import {
   CreditCard,
   RotateCcw,
   Users,
-  Mail,
   FileText,
   TrendingUp,
   ShieldCheck,
   Settings,
-  History,
   ExternalLink
 } from 'lucide-react';
 
@@ -27,7 +25,6 @@ export const Sidebar = ({ mobileOpen, onCloseMobile }) => {
     { to: '/admin/customers', label: 'Customers', icon: Users },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
     { to: '/admin/refunds', label: 'Refunds', icon: RotateCcw },
-    { to: '/admin/email-logs', label: 'Brevo Email Logs', icon: Mail },
     { to: '/admin/content', label: 'Website Content', icon: FileText },
     { to: '/admin/analytics', label: 'Revenue Analytics', icon: TrendingUp },
     { to: '/admin/settings', label: 'Settings', icon: Settings }
@@ -35,7 +32,6 @@ export const Sidebar = ({ mobileOpen, onCloseMobile }) => {
 
   if (adminUser?.role === 'super_admin') {
     links.push({ to: '/admin/users', label: 'Admin Staff', icon: ShieldCheck });
-    links.push({ to: '/admin/audit-logs', label: 'Security Audit Logs', icon: History });
   }
 
   return (

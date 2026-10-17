@@ -7,7 +7,6 @@ import {
   PackageCheck,
   CreditCard,
   Users,
-  Mail,
   TrendingUp,
   Settings,
   ShieldCheck,
@@ -34,7 +33,6 @@ export const AdminLayout = () => {
     { to: '/admin/products', label: 'Product & Pricing', icon: PackageCheck },
     { to: '/admin/payments', label: 'Payments', icon: CreditCard },
     { to: '/admin/customers', label: 'Customers', icon: Users },
-    { to: '/admin/email-logs', label: 'Brevo Email Logs', icon: Mail },
     { to: '/admin/analytics', label: 'Revenue Analytics', icon: TrendingUp },
     { to: '/admin/settings', label: 'Settings', icon: Settings }
   ];

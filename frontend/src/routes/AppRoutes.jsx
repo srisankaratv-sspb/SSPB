@@ -18,7 +18,6 @@ import OrderDetailsPage from '../pages/admin/OrderDetailsPage';
 import ProductsPage from '../pages/admin/ProductsPage';
 import PaymentsPage from '../pages/admin/PaymentsPage';
 import CustomersPage from '../pages/admin/CustomersPage';
-import EmailLogsPage from '../pages/admin/EmailLogsPage';
 import AnalyticsPage from '../pages/admin/AnalyticsPage';
 import SettingsPage from '../pages/admin/SettingsPage';
 import AdminUsersPage from '../pages/admin/AdminUsersPage';
@@ -105,7 +104,6 @@ export const AppRoutes = () => {
         <Route path="products" element={<ProductsPage />} />
         <Route path="payments" element={<PaymentsPage />} />
         <Route path="customers" element={<CustomersPage />} />
-        <Route path="email-logs" element={<EmailLogsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="users" element={<AdminUsersPage />} />
