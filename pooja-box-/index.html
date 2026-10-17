@@ -1,0 +1,572 @@
+<title>Soora Samhara Pooja Box</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Mukta:wght@400;500;700&family=Noto+Serif+Tamil:wght@500;700&family=Noto+Sans+Tamil:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: a dark maroon hero band with the box illustration, ivory sections below, the six temples as the centrepiece grid with Thiruttani marked as the final Yaagam, then the order form. */
+:root {
+  --bg: #FAF4E8;
+  --surface: #FFFCF5;
+  --field: #FFFFFF;
+  --ink: #2B1B18;
+  --head: #4A0F1B;
+  --muted: #6A5750;
+  --line: #E4D6BA;
+  --label: #8A3A12;
+  --saffron: #D9731A;
+  --on-saffron: #2B1B18;
+  --gold: #B8862B;
+  --focus: #1F5FBF;
+  --err: #A3221A;
+  --hero: #2F0A12;
+  --hero-2: #4A1220;
+  --hero-ink: #F6EBD6;
+  --hero-muted: #D8C3A5;
+  --hero-gold: #E4B655;
+  --paper: #FBF3DF;
+  --paper-ink: #5C1220;
+  --font-display: 'Marcellus', 'Noto Serif Tamil', Georgia, serif;
+  --font-tamil: 'Noto Serif Tamil', 'Marcellus', Georgia, serif;
+  --font-body: 'Mukta', 'Noto Sans Tamil', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161010;
+    --surface: #211716;
+    --field: #1A1211;
+    --ink: #F4E9D5;
+    --head: #F4E9D5;
+    --muted: #BBA88F;
+    --line: #3B2A25;
+    --label: #E4B655;
+    --saffron: #F08A2C;
+    --on-saffron: #1F1210;
+    --gold: #E4B655;
+    --focus: #7FB0FF;
+    --err: #FF8F86;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161010;
+  --surface: #211716;
+  --field: #1A1211;
+  --ink: #F4E9D5;
+  --head: #F4E9D5;
+  --muted: #BBA88F;
+  --line: #3B2A25;
+  --label: #E4B655;
+  --saffron: #F08A2C;
+  --on-saffron: #1F1210;
+  --gold: #E4B655;
+  --focus: #7FB0FF;
+  --err: #FF8F86;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+h1, h2, h3, p, ul { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+.wrap {
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.band { padding-block: 64px; }
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--label);
+}
+h2.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4.4vw, 2.6rem);
+  line-height: 1.15;
+  color: var(--head);
+  text-wrap: balance;
+  margin-top: 10px;
+}
+.lede { color: var(--muted); max-width: 60ch; margin-top: 14px; }
+
+/* Top bar and hero */
+.top {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--hero);
+  color: var(--hero-ink);
+  border-bottom: 1px solid rgba(228, 182, 85, 0.25);
+}
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 56px; }
+.brand { font-family: var(--font-display); font-size: 1.15rem; letter-spacing: 0.04em; text-decoration: none; }
+.top a.mini {
+  font-size: 0.9rem; font-weight: 700; text-decoration: none; color: var(--hero-gold);
+  border: 1px solid var(--hero-gold); padding: 6px 14px; border-radius: 3px;
+}
+
+.hero {
+  background:
+    radial-gradient(900px 420px at 85% 10%, rgba(228, 182, 85, 0.16), transparent 70%),
+    linear-gradient(165deg, var(--hero-2), var(--hero) 70%);
+  color: var(--hero-ink);
+  padding-block: 56px 72px;
+}
+.hero-grid { display: grid; gap: 40px; grid-template-columns: minmax(0, 1fr); align-items: center; }
+@media (min-width: 840px) { .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); } }
+.hero .eyebrow { color: var(--hero-gold); }
+.tamil-title { font-family: var(--font-tamil); font-weight: 700; font-size: 1.3rem; color: var(--hero-gold); margin-top: 14px; }
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 6.6vw, 4rem);
+  line-height: 1.08;
+  text-wrap: balance;
+  margin-top: 8px;
+}
+.hero .sub { color: var(--hero-muted); font-size: 1.1rem; max-width: 52ch; margin-top: 20px; }
+.price-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 28px; }
+.price { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; color: var(--hero-gold); font-variant-numeric: tabular-nums; }
+.price-note { color: var(--hero-muted); font-size: 0.95rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin-top: 24px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 52px; padding: 0 30px;
+  background: var(--saffron); color: var(--on-saffron);
+  font: 700 1.05rem var(--font-body);
+  border: 0; border-radius: 3px; cursor: pointer; text-decoration: none;
+}
+.btn:hover { filter: brightness(1.08); }
+.link-quiet { color: var(--hero-ink); font-weight: 500; text-underline-offset: 4px; }
+.countdown {
+  display: inline-flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;
+  margin-top: 28px; padding: 10px 14px;
+  border-left: 3px solid var(--hero-gold); background: rgba(246, 235, 214, 0.07);
+  font-size: 0.95rem; color: var(--hero-ink);
+}
+.countdown strong { font-family: var(--font-display); font-weight: 400; font-size: 1.15rem; color: var(--hero-gold); font-variant-numeric: tabular-nums; }
+.art {
+  width: 100%;
+  max-width: 460px;
+  justify-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.art svg,
+.art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.art img:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.55);
+}
+
+/* What's inside */
+.inside-grid { display: grid; gap: 28px 56px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 840px) { .inside-grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); } }
+.items { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+.items li {
+  display: grid; grid-template-columns: 68px minmax(0, 1fr); gap: 16px; align-items: baseline;
+  padding: 20px 0; border-bottom: 1px solid var(--line);
+}
+.qty { font-family: var(--font-display); font-size: 2rem; line-height: 1; color: var(--label); font-variant-numeric: tabular-nums; }
+.items h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; color: var(--head); line-height: 1.25; }
+.items p { color: var(--muted); margin-top: 4px; }
+
+/* Temples */
+.temples { background: var(--surface); border-block: 1px solid var(--line); }
+.temple-grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); margin-top: 32px; }
+@media (min-width: 560px) { .temple-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .temple-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.temple { border: 1px solid var(--line); background: var(--bg); padding: 22px 22px 20px; min-width: 0; }
+.temple .ta { font-family: var(--font-tamil); font-weight: 700; font-size: 1.3rem; color: var(--head); line-height: 1.35; }
+.temple .en { font-family: var(--font-display); font-size: 1.15rem; color: var(--head); margin-top: 4px; }
+.temple .where { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+.temple.final {
+  background: linear-gradient(165deg, var(--hero-2), var(--hero));
+  border-color: var(--hero-gold);
+}
+.temple.final .ta, .temple.final .en { color: var(--hero-ink); }
+.temple.final .where { color: var(--hero-muted); }
+.temple.final .flag {
+  display: inline-block; margin-top: 14px; padding: 4px 10px;
+  background: var(--hero-gold); color: #2B1B18; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;
+}
+
+/* Certificate */
+.cert-grid { display: grid; gap: 36px 56px; grid-template-columns: minmax(0, 1fr); align-items: center; }
+@media (min-width: 840px) { .cert-grid { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } }
+.cert { background: var(--paper); color: var(--paper-ink); padding: 10px; max-width: 460px; width: 100%; box-shadow: 0 1px 0 var(--line), 0 18px 40px -22px rgba(0, 0, 0, 0.5); }
+.cert-in { border: 2px solid var(--gold); padding: 30px 24px 26px; text-align: center; position: relative; }
+.cert-k { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; }
+.cert-t { font-family: var(--font-display); font-size: 1.7rem; line-height: 1.15; margin-top: 12px; text-wrap: balance; }
+.cert-s { margin-top: 10px; font-size: 0.95rem; }
+.cert-rule { height: 1px; background: var(--paper-ink); opacity: 0.35; margin: 22px auto 0; width: 60%; }
+.cert-seal {
+  width: 64px; height: 64px; border-radius: 50%; margin: 22px auto 0;
+  display: grid; place-items: center;
+  background: var(--gold); color: var(--paper); border: 3px double var(--paper);
+  font-family: var(--font-tamil); font-weight: 700; font-size: 1rem;
+}
+.cert-cap { font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+.checks { list-style: none; padding: 0; margin-top: 22px; display: grid; gap: 14px; }
+.checks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; }
+.checks svg { margin-top: 4px; }
+
+/* Order */
+.order { background: var(--surface); border-top: 1px solid var(--line); }
+.order-grid { display: grid; gap: 36px 56px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 840px) { .order-grid { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); } }
+.sum { margin-top: 24px; border-top: 1px solid var(--line); }
+.sum div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.sum .tot { font-family: var(--font-display); font-size: 1.5rem; color: var(--head); }
+.small { font-size: 0.88rem; color: var(--muted); margin-top: 12px; }
+form.card { border: 1px solid var(--line); background: var(--bg); padding: 26px; display: grid; gap: 18px; min-width: 0; }
+.fld { display: grid; gap: 6px; min-width: 0; }
+.fld label { font-weight: 700; font-size: 0.95rem; }
+.fld input, .fld textarea {
+  width: 100%; font: 400 1rem var(--font-body); color: var(--ink);
+  background: var(--field); border: 1px solid var(--line); border-radius: 3px;
+  padding: 12px 14px; min-height: 48px;
+}
+.fld textarea { min-height: 88px; resize: vertical; }
+.fld input[aria-invalid="true"], .fld textarea[aria-invalid="true"] { border-color: var(--err); }
+.err { color: var(--err); font-size: 0.85rem; min-height: 0; }
+.two { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 520px) { .two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stepper { display: inline-grid; grid-template-columns: 48px 64px 48px; border: 1px solid var(--line); background: var(--field); width: max-content; }
+.stepper button { min-height: 48px; border: 0; background: transparent; color: var(--ink); font: 700 1.3rem var(--font-body); cursor: pointer; }
+.stepper input { border: 0; border-inline: 1px solid var(--line); text-align: center; padding: 0; min-height: 48px; font-variant-numeric: tabular-nums; }
+.result { border: 1px solid var(--gold); background: var(--bg); padding: 26px; display: grid; gap: 14px; min-width: 0; }
+.result h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.5rem; color: var(--head); }
+.result textarea {
+  width: 100%; min-height: 190px; font: 400 0.92rem/1.5 ui-monospace, Menlo, Consolas, monospace;
+  background: var(--field); color: var(--ink); border: 1px solid var(--line); padding: 12px; border-radius: 3px;
+}
+.result .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn.alt { background: transparent; color: var(--head); border: 1px solid var(--gold); }
+
+footer { background: var(--hero); color: var(--hero-muted); padding-block: 36px; font-size: 0.92rem; }
+footer .wrap { display: grid; gap: 6px; }
+footer strong { font-family: var(--font-display); font-weight: 400; font-size: 1.15rem; color: var(--hero-ink); }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Sri Sankara TV</a>
+    <a class="mini" href="#order">Order the box</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Arupadai Veedu · Soora Samhara 2026</p>
+        <p class="tamil-title" lang="ta">சூரசம்ஹார பூஜை</p>
+        <h1>Soora Samhara Pooja Box</h1>
+        <p class="sub">Six vibhuti from the Arupadai temples, a Murugan keepsake statue, a rudraksh bracelet and chandan. The box travels to all six temples and to the final Yaagam at Thiruttani on 15 November, and comes to you with its authentication certificate.</p>
+        <div class="price-row">
+          <span class="price">₹2,500</span>
+          <span class="price-note">per box, one standard box</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn" href="#order">Reserve your box</a>
+          <a class="link-quiet" href="#inside">See what is inside</a>
+        </div>
+        <p class="countdown"><strong id="days-left">31 days to the Yaagam</strong><span>15 November 2026 · Thiruttani</span></p>
+      </div>
+      <div class="art">
+        <img
+          src="./Luxury%20Maroon%20Murugan%20Pooja%20Kit.png"
+          alt="Luxury Maroon Murugan Pooja Kit - Six vibhuti packets, Murugan keepsake statue, rudraksh bracelet, chandan and authentication certificate"
+          class="hero-box-img"
+          width="440"
+          height="402"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="inside">
+    <div class="wrap inside-grid">
+      <div>
+        <p class="eyebrow">Inside the box</p>
+        <h2 class="title">Five things, blessed along the way</h2>
+        <p class="lede">Everything is packed as one box and travels together from temple to temple, ending at the Yaagam in Thiruttani.</p>
+      </div>
+      <ul class="items">
+        <li><span class="qty">6×</span><div><h3>Vibhuti from the Arupadai temples</h3><p>One packet from each of the six abodes of Lord Murugan.</p></div></li>
+        <li><span class="qty">1×</span><div><h3>Murugan keepsake statue</h3><p>Six inches tall, for your home altar.</p></div></li>
+        <li><span class="qty">1×</span><div><h3>Rudraksh bracelet</h3><p>Rudraksh beads strung as a bracelet.</p></div></li>
+        <li><span class="qty">1×</span><div><h3>Chandan</h3><p>For tilak and for your daily pooja.</p></div></li>
+        <li><span class="qty">1×</span><div><h3>Authentication certificate</h3><p>Issued by Sri Sankara TV with your box.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band temples" id="temples">
+    <div class="wrap">
+      <p class="eyebrow">The journey</p>
+      <h2 class="title">Six temples, one Yaagam</h2>
+      <p class="lede">The box visits all six Arupadai Veedu temples, then reaches Thiruttani for the final Yaagam on 15 November.</p>
+      <div class="temple-grid">
+        <div class="temple"><p class="ta" lang="ta">திருப்பரங்குன்றம்</p><p class="en">Thiruparankundram</p><p class="where">Madurai</p></div>
+        <div class="temple"><p class="ta" lang="ta">திருச்செந்தூர்</p><p class="en">Thiruchendur</p><p class="where">Thoothukudi</p></div>
+        <div class="temple"><p class="ta" lang="ta">பழனி</p><p class="en">Palani</p><p class="where">Dindigul</p></div>
+        <div class="temple"><p class="ta" lang="ta">சுவாமிமலை</p><p class="en">Swamimalai</p><p class="where">Thanjavur</p></div>
+        <div class="temple"><p class="ta" lang="ta">பழமுதிர்சோலை</p><p class="en">Pazhamudhirsolai</p><p class="where">Madurai</p></div>
+        <div class="temple final"><p class="ta" lang="ta">திருத்தணி</p><p class="en">Thiruttani</p><p class="where">Tiruvallur</p><span class="flag">Final Yaagam · 15 November</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="certificate">
+    <div class="wrap cert-grid">
+      <div>
+        <div class="cert" role="img" aria-label="Illustration of the authentication certificate">
+          <div class="cert-in">
+            <p class="cert-k">Sri Sankara TV</p>
+            <p class="cert-t">Authentication Certificate</p>
+            <p class="cert-s">Soora Samhara Pooja 2026</p>
+            <div class="cert-rule"></div>
+            <div class="cert-seal" lang="ta">வேல்</div>
+          </div>
+        </div>
+        <p class="cert-cap">Illustration of the certificate. Final design may differ.</p>
+      </div>
+      <div>
+        <p class="eyebrow">Proof that it is genuine</p>
+        <h2 class="title">Every box carries a certificate</h2>
+        <p class="lede">Your box is not a catalogue item. It is the same box that went to the six temples and to the Yaagam, and the certificate says so.</p>
+        <ul class="checks">
+          <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--gold)"/><path d="M6.5 11.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--gold)"/></svg><span>Vibhuti sourced from the six Arupadai temples</span></li>
+          <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--gold)"/><path d="M6.5 11.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--gold)"/></svg><span>Box taken to the final Yaagam at Thiruttani on 15 November</span></li>
+          <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--gold)"/><path d="M6.5 11.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--gold)"/></svg><span>Certificate issued by Sri Sankara TV, packed inside your box</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band order" id="order">
+    <div class="wrap order-grid">
+      <div>
+        <p class="eyebrow">Reserve your box</p>
+        <h2 class="title">One box, ₹2,500</h2>
+        <p class="lede">Choose how many boxes you want and share your delivery details. One standard box for every devotee, with the same contents.</p>
+        <div class="sum" aria-live="polite">
+          <div><span>Soora Samhara Pooja Box × <span id="sum-qty">1</span></span><span id="sum-line">₹2,500</span></div>
+          <div class="tot"><span>Box total</span><span id="sum-total">₹2,500</span></div>
+        </div>
+        <p class="small">Price shown is for the box. Delivery details are confirmed when your order is processed.</p>
+      </div>
+
+      <div style="min-width:0">
+        <form class="card" id="order-form" novalidate>
+          <div class="fld">
+            <label for="f-qty">Number of boxes</label>
+            <div class="stepper">
+              <button type="button" id="qty-minus" aria-label="One fewer box">−</button>
+              <input id="f-qty" type="text" inputmode="numeric" value="1" readonly aria-live="polite">
+              <button type="button" id="qty-plus" aria-label="One more box">+</button>
+            </div>
+          </div>
+          <div class="two">
+            <div class="fld">
+              <label for="f-name">Full name</label>
+              <input id="f-name" type="text" autocomplete="name" required>
+              <p class="err" id="e-name" role="alert"></p>
+            </div>
+            <div class="fld">
+              <label for="f-phone">Mobile number</label>
+              <input id="f-phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit number" required>
+              <p class="err" id="e-phone" role="alert"></p>
+            </div>
+          </div>
+          <div class="fld">
+            <label for="f-addr">Delivery address</label>
+            <textarea id="f-addr" autocomplete="street-address" required></textarea>
+            <p class="err" id="e-addr" role="alert"></p>
+          </div>
+          <div class="two">
+            <div class="fld">
+              <label for="f-city">City</label>
+              <input id="f-city" type="text" autocomplete="address-level2" required>
+              <p class="err" id="e-city" role="alert"></p>
+            </div>
+            <div class="fld">
+              <label for="f-state">State</label>
+              <input id="f-state" type="text" autocomplete="address-level1" value="Tamil Nadu" required>
+              <p class="err" id="e-state" role="alert"></p>
+            </div>
+          </div>
+          <div class="fld" style="max-width:220px">
+            <label for="f-pin">Pincode</label>
+            <input id="f-pin" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="6 digits" required>
+            <p class="err" id="e-pin" role="alert"></p>
+          </div>
+          <button class="btn" type="submit">Place order request</button>
+        </form>
+
+        <div class="result" id="result" hidden>
+          <h3>Your order request is ready</h3>
+          <p id="result-note"></p>
+          <textarea id="result-text" readonly aria-label="Order details"></textarea>
+          <div class="actions">
+            <button class="btn" type="button" id="copy-btn">Copy order details</button>
+            <a class="btn" id="pay-link" href="#" target="_blank" rel="noopener" hidden>Pay now</a>
+            <a class="btn alt" id="wa-link" href="#" target="_blank" rel="noopener" hidden>Send on WhatsApp</a>
+            <button class="btn alt" type="button" id="edit-btn">Edit details</button>
+          </div>
+          <p class="small" id="copy-status" role="status"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>Sri Sankara TV</strong>
+    <span>Soora Samhara Pooja Box · Arupadai temples to the Thiruttani Yaagam, 15 November 2026</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Set these to switch on the matching buttons after an order request is made.
+  // whatsapp: number with country code and no symbols, for example 91XXXXXXXXXX
+  // paymentLink: a hosted payment page URL for the ₹2,500 box
+  var CONFIG = { whatsapp: "", paymentLink: "" };
+  var PRICE = 2500, MAXQ = 20;
+
+  function inr(n) { return "₹" + n.toLocaleString("en-IN"); }
+  function $(id) { return document.getElementById(id); }
+
+  // Countdown to the Yaagam (15 November 2026, IST)
+  var target = new Date("2026-11-15T00:00:00+05:30").getTime();
+  var diff = target - Date.now();
+  var d = Math.ceil(diff / 86400000);
+  var label;
+  if (diff > 0) { label = d + (d === 1 ? " day" : " days") + " to the Yaagam"; }
+  else if (diff > -86400000) { label = "The Yaagam is today"; }
+  else { label = "The Yaagam has taken place"; }
+  $("days-left").textContent = label;
+
+  // Quantity and totals
+  var qty = 1;
+  function renderQty() {
+    $("f-qty").value = String(qty);
+    $("sum-qty").textContent = String(qty);
+    $("sum-line").textContent = inr(qty * PRICE);
+    $("sum-total").textContent = inr(qty * PRICE);
+  }
+  $("qty-minus").addEventListener("click", function () { if (qty > 1) { qty--; renderQty(); } });
+  $("qty-plus").addEventListener("click", function () { if (qty < MAXQ) { qty++; renderQty(); } });
+  renderQty();
+
+  // Validation
+  var rules = [
+    ["f-name", "e-name", function (v) { return v.length >= 2; }, "Enter your full name."],
+    ["f-phone", "e-phone", function (v) { return /^(?:\+?91)?[6-9]\d{9}$/.test(v.replace(/[\s-]/g, "")); }, "Enter a 10-digit Indian mobile number."],
+    ["f-addr", "e-addr", function (v) { return v.length >= 8; }, "Enter your full delivery address."],
+    ["f-city", "e-city", function (v) { return v.length >= 2; }, "Enter your city."],
+    ["f-state", "e-state", function (v) { return v.length >= 2; }, "Enter your state."],
+    ["f-pin", "e-pin", function (v) { return /^\d{6}$/.test(v); }, "Enter a 6-digit pincode."]
+  ];
+
+  function validate() {
+    var firstBad = null;
+    rules.forEach(function (r) {
+      var el = $(r[0]), v = el.value.trim(), ok = r[2](v);
+      $(r[1]).textContent = ok ? "" : r[3];
+      el.setAttribute("aria-invalid", ok ? "false" : "true");
+      if (!ok && !firstBad) firstBad = el;
+    });
+    return firstBad;
+  }
+  rules.forEach(function (r) {
+    $(r[0]).addEventListener("input", function () {
+      $(r[1]).textContent = "";
+      $(r[0]).setAttribute("aria-invalid", "false");
+    });
+  });
+
+  function buildMessage() {
+    var lines = [
+      "Soora Samhara Pooja Box – order request",
+      "Boxes: " + qty,
+      "Box total: " + inr(qty * PRICE),
+      "Name: " + $("f-name").value.trim(),
+      "Mobile: " + $("f-phone").value.trim(),
+      "Address: " + $("f-addr").value.trim().replace(/\s*\n\s*/g, ", ") + ", " +
+        $("f-city").value.trim() + ", " + $("f-state").value.trim() + " – " + $("f-pin").value.trim()
+    ];
+    return lines.join("\n");
+  }
+
+  var form = $("order-form"), result = $("result");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var bad = validate();
+    if (bad) { bad.focus(); return; }
+    var msg = buildMessage();
+    $("result-text").value = msg;
+    var hasPay = !!CONFIG.paymentLink, hasWa = !!CONFIG.whatsapp;
+    $("result-note").textContent = hasPay || hasWa
+      ? "Check the details below, then continue to complete your order."
+      : "Copy these details and send them to the Sri Sankara TV order desk to complete your order.";
+    var pay = $("pay-link"), wa = $("wa-link");
+    pay.hidden = !hasPay;
+    if (hasPay) pay.href = CONFIG.paymentLink;
+    wa.hidden = !hasWa;
+    if (hasWa) wa.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(msg);
+    $("copy-status").textContent = "";
+    form.hidden = true;
+    result.hidden = false;
+    result.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  $("edit-btn").addEventListener("click", function () {
+    result.hidden = true;
+    form.hidden = false;
+    $("f-name").focus();
+  });
+
+  $("copy-btn").addEventListener("click", function () {
+    var ta = $("result-text"), status = $("copy-status");
+    function fallback() {
+      ta.focus(); ta.select();
+      status.textContent = "Select and copy the text above.";
+    }
+    try {
+      navigator.clipboard.writeText(ta.value).then(
+        function () { status.textContent = "Order details copied."; },
+        fallback
+      );
+    } catch (err) { fallback(); }
+  });
+})();
+</script>

@@ -1,0 +1,28 @@
+:root {
+  --admin-bg: #F8F9FA;
+  --admin-sidebar: #2F0A12;
+  --admin-sidebar-hover: #4A1220;
+  --admin-sidebar-ink: #F6EBD6;
+  --admin-gold: #E4B655;
+  --admin-gold-dim: #B8862B;
+  --admin-card: #FFFFFF;
+  --admin-border: #E2E8F0;
+  --admin-text: #1E293B;
+  --admin-muted: #64748B;
+  --admin-primary: #8A3A12;
+  --admin-saffron: #D9731A;
+  
+  --status-success: #16A34A;
+  --status-success-bg: #DCFCE7;
+  --status-warning: #D97706;
+  --status-warning-bg: #FEF3C7;
+  --status-danger: #DC2626;
+  --status-danger-bg: #FEE2E2;
+  --status-info: #0284C7;
+  --status-info-bg: #E0F2FE;
+  --status-purple: #7C3AED;
+  --status-purple-bg: #F3E8FF;
+
+  --font-display: 'Marcellus', 'Noto Serif Tamil', Georgia, serif;
+  --font-body: 'Mukta', system-ui, -apple-system, sans-serif;
+}

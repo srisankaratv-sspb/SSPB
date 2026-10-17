@@ -1,0 +1,72 @@
+:root {
+  /* Cinematic Luxury Temple Color Palette */
+  --bg: #26090D;                    /* Deep burgundy base background */
+  --bg-dark: #1E070A;               /* Ultra-deep dark maroon for headers & footers */
+  --bg-primary: #351014;            /* Primary section background */
+  --surface: #3E1418;               /* Warm maroon surface for cards */
+  --surface-hover: #4E1A20;         /* Hover state for cards */
+  --surface-dark: #24080B;          /* Recessed dark surfaces */
+  --surface-card: #2E0D12;          /* Rich velvet card background */
+  
+  --field: #FAF4E8;                 /* Ivory cream input fields for high readability */
+  --field-ink: #220A0D;             /* Crisp dark ink inside input fields */
+  --field-border: #C8B291;          /* Subtle input field border */
+  
+  --ink: #F7E9CF;                   /* Primary ivory/cream text */
+  --head: #F7E9CF;                  /* Headings ivory cream */
+  --muted: #D9C6A6;                 /* Muted cream text for lede & subtitles */
+  --muted-dark: #A89379;            /* Secondary muted text */
+  --line: rgba(214, 163, 66, 0.22); /* Subtle antique gold divider lines */
+  --line-gold: #D6A342;             /* Antique gold borders */
+  --line-gold-glow: rgba(214, 163, 66, 0.4);
+  
+  --label: #D6A342;                 /* Antique gold label/eyebrow */
+  --saffron: #D9731A;               /* Traditional sacred saffron */
+  --saffron-bright: #E89A38;        /* Golden saffron highlight */
+  --on-saffron: #200B0E;            /* Dark maroon text on saffron buttons */
+  
+  --gold: #D6A342;                  /* Antique gold */
+  --gold-bright: #F2BC55;           /* Bright gold highlight */
+  --bronze: #713A20;                /* Warm bronze accent */
+  --focus: #F2BC55;                 /* Warm golden focus ring */
+  --err: #EF4444;                   /* Validation error red */
+  --err-bg: rgba(239, 68, 68, 0.12);
+  
+  /* Hero Section Specifics */
+  --hero: #26090D;
+  --hero-2: #351014;
+  --hero-surface: #48191A;
+  --hero-ink: #F7E9CF;
+  --hero-muted: #D9C6A6;
+  --hero-gold: #D6A342;
+  --hero-gold-bright: #F2BC55;
+  
+  /* Paper & Authentication Certificate */
+  --paper: #2F0C11;
+  --paper-ink: #F7E9CF;
+  
+  /* Typography */
+  --font-display: 'Marcellus', Georgia, serif;
+  --font-tamil: 'Noto Serif Tamil', 'Marcellus', Georgia, serif;
+  --font-body: 'Mukta', 'Noto Sans Tamil', system-ui, -apple-system, sans-serif;
+  
+  /* Admin Portal Tokens (Preserved for separate Admin panel) */
+  --admin-bg: #F8F9FA;
+  --admin-sidebar: #26090D;
+  --admin-sidebar-ink: #F7E9CF;
+  --admin-sidebar-hover: #3E1418;
+  --admin-card: #FFFFFF;
+  --admin-border: #E2E8F0;
+  --admin-text: #1E293B;
+  --admin-muted: #64748B;
+  --admin-accent: #D6A342;
+  --admin-accent-light: #FBF3DF;
+  --admin-success: #16A34A;
+  --admin-success-bg: #DCFCE7;
+  --admin-warning: #D97706;
+  --admin-warning-bg: #FEF3C7;
+  --admin-danger: #DC2626;
+  --admin-danger-bg: #FEE2E2;
+  --admin-info: #0284C7;
+  --admin-info-bg: #E0F2FE;
+}
